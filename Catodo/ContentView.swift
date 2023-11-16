@@ -24,13 +24,17 @@ typealias TaskID = String
             item.id == id
         }!
         items[index].isComplete.toggle()
+        
+        let incomplete = items.filter { !$0.isComplete }
+        let complete = items.filter { $0.isComplete }
+        items = incomplete + complete
     }
     
     private(set) var items: [Item] = Item.mock
     
 }
 
-struct Item: Identifiable {
+struct Item: Identifiable, Equatable {
     let taskName: String
     var isComplete: Bool
     var id: String { taskName } // TODO: Make it to be proper id
@@ -68,6 +72,7 @@ struct ContentView: View {
                     }, label: {
                         Image(systemName: "plus.app")
                     })
+                    .keyboardShortcut("n")
                 }
             }
             .alert("Add New Task", isPresented: $showAddNewTaskAlert) {
@@ -76,6 +81,7 @@ struct ContentView: View {
                 Button("Cancle", action: { })
             }
         }
+        .animation(.spring, value: store.items)
     }
 }
 
